@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Dapp</title>
+    <link rel="stylesheet" href="./main.css">
+    <script
+  src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"
+  type="application/javascript"
+></script>
+   <script>
+    
+
+
+
+const MoodContractABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_mood",
+				"type": "string"
+			}
+		],
+		"name": "setMood",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getMood",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+const MoodContractAddress ="0xC0E76e650722c4B60b17ff102Ca22e779a5163B7";
+
+let MoodContract;
+let signer;
+const provider = new ethers.providers.Web3Provider(window.ethereum,"ropsten");
+provider.send("eth_requestAccounts", []).then(() => {
+  provider.listAccounts().then((accounts) => {
+    signer = provider.getSigner(accounts[0]);
+    MoodContract = new ethers.Contract(
+      MoodContractAddress,
+      MoodContractABI,
+      signer
+    );
+  });
+});
+
+async function getMood() {
+  const getMoodPromise = MoodContract.getMood();
+  const Mood = await getMoodPromise;
+  document.getElementById("displaymood").innerHTML= Mood;
+  console.log(Mood);
+}
+
+async function setMood() {
+  const mood = document.getElementById("mood").value;
+  const setMoodPromise = MoodContract.setMood(mood);
+  await setMoodPromise;
+}
+   </script>
+
+</head>
+<body>
+    <div>
+        <h1>A Simple Dapp </h1>
+        <p>Here we can set or get the mood:</p>
+        <label for="mood">Input Mood:</label>
+        <input type="text" id="mood"/>
+        <button onClick="getMood()">Get Mood</button>
+        <button onClick="setMood()">Set Mood</button>
+        <h2 id="displaymood"></h2>
+    </div>
+    
+</body>
+</html>
